@@ -1,0 +1,183 @@
+<h1 class="text-center">Liste des elections</h1>
+
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
+    *,
+    *::before,
+    *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
+
+    body {
+        background: rgba(128, 128, 128, 0.1);
+        display: grid;
+        place-content: center;
+        margin-top: 40px;
+    }
+    body .accordion {
+        width: 400px;
+    }
+    body .accordion .accordion-list .accordion-item {
+        list-style: none;
+        position: relative;
+        height: max-content;
+    }
+    body .accordion .accordion-list .accordion-item input[type=checkbox] {
+        display: none;
+    }
+    body .accordion .accordion-list .accordion-item label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: #ffffff;
+        cursor: pointer;
+        position: relative;
+        z-index: 2;
+    }
+    body .accordion .accordion-list .accordion-item label .opened {
+        display: none;
+    }
+    body .accordion .accordion-list .accordion-item label .closed {
+        display: block;
+    }
+    body .accordion .accordion-list .accordion-item .content {
+        width: 100%;
+        transition: all 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+        padding: 8px 16px;
+        position: relative;
+        z-index: 1;
+        padding-left: 20px;
+        max-height: 0;
+        margin-top: -12px;
+    }
+    body .accordion .accordion-list .accordion-item .content.show {
+        margin-top: 0;
+        max-height: 200px;
+        opacity: 1;
+        pointer-events: all;
+    }
+    body .accordion .accordion-list .accordion-item .content p {
+        margin-bottom: 8px;
+        color: gray;
+    }
+    body .accordion .accordion-list .accordion-item input[type=checkbox]:checked ~ label .opened {
+        display: block;
+    }
+    body .accordion .accordion-list .accordion-item input[type=checkbox]:checked ~ label .closed {
+        display: none;
+    }
+</style>
+ <section class="accordion">
+    <ul class="accordion-list">
+        {% if(mesCampagnes) %}
+
+        {%endif %}
+        {% for campagne in mesCampagnes %}
+            <li class="accordion-item">
+                <input type="checkbox" id="collapse-{{ campagne.id }}" class="accordion-button">
+                <label for="collapse-{{ campagne.id }}" class="accordion-header">
+                    <p> {{ campagne.nom }}</p>
+                    <p class="closed">+</p>
+                    <p class="opened">-</p>
+                </label>
+
+                <section class="content">
+                    <div style="">
+                        {% if( not campagne.idCandidat) %}
+                            Vous n'avez pas encore voté!<br>
+                            {% if( campagne.isClosed) %}
+                                <span style="font-style: italic;color: gray;font-size: 12px">Vote fermé!</span>
+
+                            {%else %}
+                                <span style="font-style: italic;color: gray;font-size: 12px">(Vote toujours en cours!) <a href="{{ path('voter', {id: campagne.id}) }}" style="text-decoration: underline;cursor: pointer">Voter</a></span>
+
+                            {%endif %}
+                        {%else %}
+                            <div style="height: 20px;text-align: center;margin-bottom: 5px"><em>Vote validé! Choix: </em><br></div>
+
+                            <div style="margin:auto;background-color: white;border-radius: 10px;height: 140px;width: 150px">
+                                    <div style="height: 15px"></div>
+
+                                    <div style="border-radius: 50%;margin: auto;background-color: red;height: 60px;width: 60px">
+                                        <img style="height: 60px;" src="../assets/images/images.png">
+
+                                    </div>
+                                    <p style="text-align: center">
+                                        {{ campagne.nomCandidat }}
+                                    </p>
+                                </div>
+
+
+                        {%endif %}
+                    </div>
+                </section>
+            </li>
+        {% endfor %}
+       <!-- <li class="accordion-item">
+            <input type="checkbox" id="collapse-2" class="accordion-button">
+            <label for="collapse-2" class="accordion-header">
+                <p>Accordion 2</p>
+                <p class="closed">+</p>
+                <p class="opened">-</p>
+            </label>
+
+            <section class="content">
+                <p>- Sub Accordion 1</p>
+                <p>- Sub Accordion 2</p>
+            </section>
+        </li>
+        <li class="accordion-item">
+            <input type="checkbox" id="collapse-3" class="accordion-button">
+            <label for="collapse-3" class="accordion-header">
+                <p>Accordion 3</p>
+                <p class="closed">+</p>
+                <p class="opened">-</p>
+            </label>
+
+            <section class="content">
+                <p>- Sub Accordion 1</p>
+                <p>- Sub Accordion 2</p>
+                <p>- Sub Accordion 3</p>
+            </section>
+        </li>
+        <li class="accordion-item">
+            <input type="checkbox" id="collapse-4" class="accordion-button">
+            <label for="collapse-4" class="accordion-header">
+                <p>Accordion 4</p>
+                <p class="closed">+</p>
+                <p class="opened">-</p>
+            </label>
+
+            <section class="content">
+                <p>- Sub Accordion 1</p>
+                <p>- Sub Accordion 2</p>
+                <p>- Sub Accordion 3</p>
+                <p>- Sub Accordion 4</p>
+            </section>
+        </li>-->
+    </ul>
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $(".accordion-button").on("change", function () {
+            $(".accordion-button").not(this).prop("checked", false);
+            const isChecked = $(this).prop("checked");
+            const content = $(this).closest(".accordion-item").find(".content");
+
+            $(".content").removeClass("show");
+            if (isChecked) {
+                content.addClass("show");
+            } else {
+                content.removeClass("show");
+            }
+        });
+    });
+</script>
